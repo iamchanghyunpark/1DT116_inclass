@@ -37,9 +37,9 @@ int main () {
 #ifdef __arm__
     float32x4_t all_ones = vdupq_n_f32(1.0);
     for (int i = 0; i < N; i+= 4) {
-        float32x4_t values = vld4q_f32(&array[i]);
+        float32x4_t values = vld1q_f32(&array[i]);
         values = vaddq_f32(all_ones, values);
-        vst4q_f32(&array[i], values);
+        vst1q_f32(&array[i], values);
     }
 #elif defined(__x86_64__)
     __m128 all_ones = _mm_set1_ps(1.0);

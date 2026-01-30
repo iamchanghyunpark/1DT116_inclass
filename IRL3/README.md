@@ -1,5 +1,44 @@
 # IRL3 Data-level-parallelism (SIMD) In-class codes
 
+## Preparation at home
+Couple of things to prepare for the IRL session.
+
+### 1. Prepare your machine to be ready to run SIMD instructions.
+I have prepared a `hello\_world.c` that works on both Arm Macs and x86
+machines.
+Please run the following command to ensure everything builds correctly and
+that you can use SIMD instructions.
+
+```
+make hello_world
+./hello_world
+```
+
+The `make` command should complete successfully and generate a `hello_world`
+binary. If not, follow the error codes and try to figure out what is wrong.
+(Copilot, ChatGPT and Claude should be able to help you out here).
+
+If you get a correct output: print out of an array of 64 floating point values
+(from 0 to 63) and another print out with 1 to 64, then you should be set to
+use SIMD instructions on your machine.
+
+### 2. Prepare the image files that we will use in IRL3
+We will be playing around a bit with image files in IRL3. 
+If you are using your own machine, download the `images.tar.bz2` from
+Studium and decompress the files into the `IRL3` directory.
+
+If you work on Crocodile, use the `setup_img_links.sh` command and it should
+create soft links (shortcuts) to the files.
+
+You may also want to look for viewers that can open ppm and pgm files.
+
+Finally, if you want to work with your own images, take a look at the next
+section to generate PPM format images :)
+
+### 3. Watch the recorded lectures!
+Reminder, watch the recorded lectures so you have an understanding of how SIMD
+works.
+
 ## References to intrinsics
 * [Arm intrinsics](https://developer.arm.com/architectures/instruction-sets/intrinsics/) - filter for NEON instructions. [Arm manual](https://developer.arm.com/documentation/den0018/a/NEON-Intrinsics) has some examples too.
 * [x86 intrinsics](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html) - filter for all of the `SSE family` and just the `AVX` within the `AVX family`. (Intel and AMD machines!)

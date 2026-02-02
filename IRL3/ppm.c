@@ -186,49 +186,45 @@ PPMImage* parsePPM(const char* filename) {
     return ppm;
 }
 
-void writePGM(const PPMImage* ppm, const char* original_filename) {
+void writePGM(const PPMImage* ppm, const char* original_filename, enum dataType type) {
     if (!ppm || !original_filename) {
         printf("Invalid arguments to writePGM\n");
         return;
     }
 
     // Change file extension from .ppm to .pgm
-    char* new_filename = malloc(strlen(original_filename) + 1 + 4); // +1 for null terminator
-    if (!new_filename) {
-        perror("Failed to allocate memory for new filename");
-        return;
-    }
-    strcpy(new_filename, original_filename);
-    char* ext = strrchr(new_filename, '.');
-    if (ext != NULL) {
-        strcpy(ext, ".pgm");
-    } else {
-        strcat(new_filename, ".pgm");
-    }
+    char *new_filename;
 
-#ifdef __arm__
-    // Change file extension from .ppm to .pgm
-    char* new_filename_fp16 = malloc(strlen(new_filename) + 1 + 9); // +1 for null terminator
-    if (!new_filename_fp16) {
-        perror("Failed to allocate memory for new filename");
-        return;
-    }
-    strcpy(new_filename_fp16, new_filename);
-    ext = strrchr(new_filename_fp16, '.');
-    if (ext != NULL) {
-        strcpy(ext, "_fp16.pgm");
+    if (type == FP32) {
+        new_filename = malloc(strlen(original_filename) + 1 + 4); // +1 for null terminator
+        if (!new_filename) {
+            perror("Failed to allocate memory for new filename");
+            return;
+        }
+        strcpy(new_filename, original_filename);
+        char* ext = strrchr(new_filename, '.');
+        if (ext != NULL) {
+            strcpy(ext, ".pgm");
+        } else {
+            strcat(new_filename, ".pgm");
+        }
+    } else if (type == FP16) {
+        new_filename = malloc(strlen(original_filename) + 1 + 9); // +1 for null terminator
+        if (!new_filename) {
+            perror("Failed to allocate memory for new filename");
+            return;
+        }
+        strcpy(new_filename, original_filename);
+        char* ext = strrchr(new_filename, '.');
+        if (ext != NULL) {
+            strcpy(ext, "_fp16.pgm");
+        } else {
+            strcat(new_filename, "_fp16.pgm");
+        }
     } else {
-        strcat(new_filename_fp16, "_fp16.pgm");
+        printf("Unknown type to writeback\n");
+        exit(1);
     }
-
-    FILE* file_fp16 = fopen(new_filename_fp16, "wb");
-    if (!file_fp16) {
-        perror("Error opening file_fp16");
-        free(new_filename);
-        return;
-    }
-    fprintf(file_fp16, "P5\n%ld %ld\n%d\n", ppm->width, ppm->height, ppm->maxval);
-#endif
 
     FILE* file = fopen(new_filename, "wb");
     if (!file) {
@@ -247,19 +243,11 @@ void writePGM(const PPMImage* ppm, const char* original_filename) {
         exit(1);
     }
 
-#ifdef __arm__
-    unsigned char *raw_data_fp16 = malloc(img_size);
-    if (!raw_data_fp16) {
-        printf("Error writing back! Cannot allocate raw_data_fp16 array\n");
-        exit(1);
-    }
-#endif
-
     for (size_t i = 0; i < img_size; i++) {
-        raw_data[i] = (unsigned char)ppm->grayscale_data[i];
-#ifdef __arm__
-        raw_data_fp16[i] = (unsigned char)ppm->grayscale_data_fp16[i];
-#endif
+        if (type == FP32)
+            raw_data[i] = (unsigned char)ppm->grayscale_data[i];
+        else if (type == FP16)
+            raw_data[i] = (unsigned char)ppm->grayscale_data_fp16[i];
     }
 
     // Write the grayscale image data with a loop
@@ -274,23 +262,6 @@ void writePGM(const PPMImage* ppm, const char* original_filename) {
         }
         total_written += written;
     }
-
-#ifdef __arm__
-    // Write the grayscale image data with a loop
-    total_written = 0;
-    while (total_written < img_size) {
-        size_t written = fwrite(raw_data_fp16 + total_written, 1, img_size - total_written, file_fp16);
-        if (written == 0) {
-            if (ferror(file_fp16)) {
-                perror("Error writing grayscale data_fp16 to file_fp16");
-                break;
-            }
-        }
-        total_written += written;
-    }
-    fclose(file_fp16);
-    free(new_filename_fp16);
-#endif
 
     fclose(file);
     free(new_filename);

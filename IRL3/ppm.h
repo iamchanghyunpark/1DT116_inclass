@@ -16,6 +16,11 @@
 #error "Unsupported Architecture"
 #endif
 
+enum dataType {
+    FP32,
+    FP16
+};
+
 typedef struct {
     char type[3];
     size_t width;
@@ -32,7 +37,7 @@ typedef struct {
 } PPMImage;
 
 PPMImage* parsePPM(const char* filename);
-void writePGM(const PPMImage* ppm, const char* original_filename);
+void writePGM(const PPMImage* ppm, const char* original_filename, enum dataType type);
 void freePPM(PPMImage* ppm);
 
 void getRGBArrays(float **R, float **G, float **B, PPMImage *ppm);

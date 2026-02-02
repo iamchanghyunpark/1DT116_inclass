@@ -70,6 +70,7 @@ int main(int argc, char** argv) {
 
     void (*process_image)(PPMImage *) = NULL;
     char processingType[20];
+    enum dataType type = FP32;
 
     if (strcmp(argv[1], "serial") == 0) {
         process_image = grayscale_image_serial;
@@ -92,6 +93,7 @@ int main(int argc, char** argv) {
     else if (strcmp(argv[1], "neon_fp16") == 0) {
         process_image = grayscale_image_simd_neon_fp16;
         sprintf(processingType, "neon_fp16");
+        type = FP16;
     }
 #endif
     else {
@@ -127,7 +129,7 @@ int main(int argc, char** argv) {
     printf("%s took a total of %lf ms, average %lf ms\n", processingType, serial_total, serial_total/(argc-1));
 
     for (int i = 0; i < argc -2; i++) {
-        writePGM(ppm_list[i], argv[i+2]);
+        writePGM(ppm_list[i], argv[i+2], type);
         freePPM(ppm_list[i]);
     }
 

@@ -4,11 +4,25 @@ In this module I have prepared three tasks. (But two of them you are familiar wi
 
 BTW, run `make` when you want to build.
 ```
+make hello_world # if you want to build the hello world.
 make grayscale_image # if you want to generate code for the first task
 make pi # if you want to build the second task
 make matmult # if you want to build the final task
 ```
-Once you have filled in all three `.cu` files, you should be able to simply just run `make` and the Makefile will build all three programs.
+Once you have filled in all four `.cu` files, you should be able to simply just run `make` and the Makefile will build all three programs.
+
+## 0. Hello world: preparing your system for the IRL session
+
+Please check that `make hello_world` compiles, and that you can run
+`./hello_world` on your machine. This code is a very simple CUDA version of
+the Hello World that we saw in IRL3. (With slight different behavior).
+
+If you are working on Crocodile, this should just work out of the box.
+If you are working on your own machine, make sure that this works. If it
+doesn't try to figure out what the error messages might be? Do you need to
+specify the path to the CUDA headers and the libraries? Maybe even the cuda
+compiler (`nvcc`)? If so, please try to resolve these before you come in to
+the session, so that you can hit the ground running during the session :)
 
 ## 1. Converting a color image into a grayscale image. (Yet again!)
 
